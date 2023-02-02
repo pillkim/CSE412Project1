@@ -87,7 +87,39 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+
+# Algorithm: GRAPH_SEARCH:
+# frontier = {startNode}
+# expanded = {}
+# while frontier is not empty:
+#     node = frontier.pop()
+#     if isGoal(node):
+#         return path_to_node
+#     if node not in expanded:
+#         expanded.add(node)
+#         for each child of node's children:
+#             frontier.push(child)
+# return failed
+    frontier = util.Stack()
+    frontier.push(problem.getStartState())
+    expanded = []
+    while frontier:
+        node = frontier.pop()
+        if problem.isGoalState(node):
+            expanded.append(node)
+            return expanded
+        if node not in expanded:
+            expanded.append(node)
+            for i in problem.getSuccessors(node):
+                frontier.push(i[0])
+    return False
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
     util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
