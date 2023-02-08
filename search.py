@@ -87,32 +87,34 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-
-# Algorithm: GRAPH_SEARCH:
-# frontier = {startNode}
-# expanded = {}
-# while frontier is not empty:
-#     node = frontier.pop()
-#     if isGoal(node):
-#         return path_to_node
-#     if node not in expanded:
-#         expanded.add(node)
-#         for each child of node's children:
-#             frontier.push(child)
-# return failed
+    from game import Directions
     frontier = util.Stack()
-    frontier.push(problem.getStartState())
     expanded = []
+    route=[]
+    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    else:
+        expanded.append(startState)
+        for i in problem.getSuccessors(startState):
+            frontier.push(i)
+
     while frontier:
         node = frontier.pop()
-        if problem.isGoalState(node):
-            expanded.append(node)
-            return expanded
-        if node not in expanded:
-            expanded.append(node)
-            for i in problem.getSuccessors(node):
-                frontier.push(i[0])
-    return False
+        print(node)
+        if problem.isGoalState(node[0]):
+            expanded.append(node[0])
+            route.append(dirDict.get(node[1]))
+            return route
+        if node[0] not in expanded:
+            expanded.append(node[0])
+            route.append(dirDict.get(node[1]))
+            for i in problem.getSuccessors(node[0]):
+                frontier.push(i)
+
+    return []
 
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
