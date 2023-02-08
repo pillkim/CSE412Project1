@@ -107,6 +107,7 @@ def depthFirstSearch(problem):
         if problem.isGoalState(node[0]):
             expanded.append(node[0])
             route.append(dirDict.get(node[1]))
+            print(route)
             return route
         if node[0] not in expanded:
             expanded.append(node[0])
