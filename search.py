@@ -90,10 +90,11 @@ def depthFirstSearch(problem):
     from game import Directions
     frontier = util.Stack()
     expanded = []
-    route=[]
     dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    whichOption = 0
 
     startState = problem.getStartState()
+    options = [(problem.isGoalState(startState), [], 0)]
     if problem.isGoalState(startState):
         return []
     else:
@@ -103,17 +104,23 @@ def depthFirstSearch(problem):
 
     while frontier:
         node = frontier.pop()
-        print(node)
-        if problem.isGoalState(node[0]):
+        goalState = problem.isGoalState(node[0])
+        if goalState:
             expanded.append(node[0])
-            route.append(dirDict.get(node[1]))
-            print(route)
-            return route
+            options[whichOption] = (goalState, options[whichOption][1].append(dirDict.get(node[1])), options[whichOption][2]+1 )
+            return options[whichOption][1]
         if node[0] not in expanded:
             expanded.append(node[0])
-            route.append(dirDict.get(node[1]))
-            for i in problem.getSuccessors(node[0]):
-                frontier.push(i)
+            successor = problem.getSuccessors(node[0])
+            if successor not in expanded:
+                for i in range(len(successor)):
+                    frontier.push(successor[i])
+                    if i > 1:
+                        options.append(options[whichOption][0], options[whichOption][1], options[whichOption][2] )
+                    else:
+                        options[whichOption] = (goalState, options[whichOption][1].append(dirDict.get(node[1])), options[whichOption][2]+1 )
+            else:
+                whichOption+=1
 
     return []
 
