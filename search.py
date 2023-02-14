@@ -94,7 +94,7 @@ def depthFirstSearch(problem):
     whichOption = 0
 
     startState = problem.getStartState()
-    options = [(problem.isGoalState(startState), [], 0)]
+    options = [[problem.isGoalState(startState), [], 0]]
     if problem.isGoalState(startState):
         return []
     else:
@@ -107,7 +107,10 @@ def depthFirstSearch(problem):
         goalState = problem.isGoalState(node[0])
         if goalState:
             expanded.append(node[0])
-            options[whichOption] = (goalState, options[whichOption][1].append(dirDict.get(node[1])), options[whichOption][2]+1 )
+            options[whichOption][0] = goalState
+            options[whichOption][1].append(dirDict.get(node[1]))
+            options[whichOption][2]+=1
+            print(whichOption)
             return options[whichOption][1]
         if node[0] not in expanded:
             expanded.append(node[0])
@@ -116,9 +119,10 @@ def depthFirstSearch(problem):
                 for i in range(len(successor)):
                     frontier.push(successor[i])
                     if i > 1:
-                        options.append(options[whichOption][0], options[whichOption][1], options[whichOption][2] )
+                        options.append([options[whichOption][0], options[whichOption][1], options[whichOption][2]])
                     else:
-                        options[whichOption] = (goalState, options[whichOption][1].append(dirDict.get(node[1])), options[whichOption][2]+1 )
+                        options[whichOption][2]+=1 
+                        options[whichOption][1].append(dirDict.get(node[1]))
             else:
                 whichOption+=1
 
