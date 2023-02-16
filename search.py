@@ -91,40 +91,28 @@ def depthFirstSearch(problem):
     frontier = util.Stack()
     expanded = []
     dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
-    whichOption = 0
-
     startState = problem.getStartState()
-    options = [[problem.isGoalState(startState), [], 0]]
     if problem.isGoalState(startState):
         return []
     else:
         expanded.append(startState)
         for i in problem.getSuccessors(startState):
-            frontier.push(i)
+            frontier.push((i[0],[i[1]]))
 
+    count = 0
     while frontier:
         node = frontier.pop()
+
         goalState = problem.isGoalState(node[0])
         if goalState:
-            expanded.append(node[0])
-            options[whichOption][0] = goalState
-            options[whichOption][1].append(dirDict.get(node[1]))
-            options[whichOption][2]+=1
-            print(whichOption)
-            return options[whichOption][1]
+            return node[1]
         if node[0] not in expanded:
             expanded.append(node[0])
-            successor = problem.getSuccessors(node[0])
-            if successor not in expanded:
-                for i in range(len(successor)):
-                    frontier.push(successor[i])
-                    if i > 1:
-                        options.append([options[whichOption][0], options[whichOption][1], options[whichOption][2]])
-                    else:
-                        options[whichOption][2]+=1 
-                        options[whichOption][1].append(dirDict.get(node[1]))
-            else:
-                whichOption+=1
+        for i in problem.getSuccessors(node[0]):
+            if i[0] not in expanded:
+                path = node[1].copy()
+                path.append(dirDict.get(i[1]))
+                frontier.push((i[0], path))
 
     return []
 
