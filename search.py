@@ -102,7 +102,6 @@ def depthFirstSearch(problem):
     count = 0
     while frontier:
         node = frontier.pop()
-
         goalState = problem.isGoalState(node[0])
         if goalState:
             return node[1]
@@ -115,22 +114,72 @@ def depthFirstSearch(problem):
                 frontier.push((i[0], path))
 
     return []
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
     util.raiseNotDefined()
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+    from game import Directions
+    frontier = util.Queue()
+    expanded = []
+    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    else:
+        expanded.append(startState)
+        for i in problem.getSuccessors(startState):
+            frontier.push((i[0],[i[1]]))
+
+    count = 0
+    while frontier:
+        node = frontier.pop()
+        goalState = problem.isGoalState(node[0])
+        if goalState:
+            return node[1]
+        if node[0] not in expanded:
+            expanded.append(node[0])
+        for i in problem.getSuccessors(node[0]):
+            if i[0] not in expanded:
+                path = node[1].copy()
+                path.append(dirDict.get(i[1]))
+                frontier.push((i[0], path))
+
+    return []
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions
+    frontier = util.PriorityQueue()
+    expanded = []
+    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    else:
+        expanded.append(startState)
+        for i in problem.getSuccessors(startState):
+            frontier.push((i[0],[i[1]],0),0)
+    count = 0
+    while frontier:
+        node = frontier.pop()
+        goalState = problem.isGoalState(node[0])
+        if goalState:
+            return node[1]
+        if node[0] not in expanded:
+            expanded.append(node[0])
+        for i in problem.getSuccessors(node[0]):
+            if i[0] not in expanded:
+                path = node[1].copy()
+                path.append(dirDict.get(i[1]))
+                print(i)
+                frontier.push((i[0], path,i[2]+node[2]),i[2]+node[2])
+
+    return []
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -143,6 +192,33 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions
+    frontier = util.PriorityQueue()
+    expanded = []
+    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    else:
+        expanded.append(startState)
+        for i in problem.getSuccessors(startState):
+            frontier.push((i[0],[i[1]],0),0)
+    count = 0
+    while frontier:
+        node = frontier.pop()
+        goalState = problem.isGoalState(node[0])
+        if goalState:
+            return node[1]
+        if node[0] not in expanded:
+            expanded.append(node[0])
+        for i in problem.getSuccessors(node[0]):
+            if i[0] not in expanded:
+                path = node[1].copy()
+                path.append(dirDict.get(i[1]))
+                print(i)
+                frontier.push((i[0], path,i[2]+node[2]),i[2]+node[2]+heuristic(i[0],problem))
+
+    return []
     util.raiseNotDefined()
 
 
