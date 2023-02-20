@@ -90,7 +90,6 @@ def depthFirstSearch(problem):
     from game import Directions
     frontier = util.Stack()
     expanded = []
-    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
     startState = problem.getStartState()
     if problem.isGoalState(startState):
         return []
@@ -99,18 +98,18 @@ def depthFirstSearch(problem):
         for i in problem.getSuccessors(startState):
             frontier.push((i[0],[i[1]]))
 
-    count = 0
     while frontier:
         node = frontier.pop()
         goalState = problem.isGoalState(node[0])
         if goalState:
+            print(node)
             return node[1]
         if node[0] not in expanded:
-            expanded.append(node[0])
+           expanded.append(node[0])
         for i in problem.getSuccessors(node[0]):
             if i[0] not in expanded:
                 path = node[1].copy()
-                path.append(dirDict.get(i[1]))
+                path.append(i[1])
                 frontier.push((i[0], path))
 
     return []
@@ -124,7 +123,6 @@ def breadthFirstSearch(problem):
     from game import Directions
     frontier = util.Queue()
     expanded = []
-    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
     startState = problem.getStartState()
     if problem.isGoalState(startState):
         return []
@@ -132,20 +130,20 @@ def breadthFirstSearch(problem):
         expanded.append(startState)
         for i in problem.getSuccessors(startState):
             frontier.push((i[0],[i[1]]))
+            expanded.append(i[0])
 
-    count = 0
     while frontier:
         node = frontier.pop()
         goalState = problem.isGoalState(node[0])
         if goalState:
+            print(node)
             return node[1]
-        if node[0] not in expanded:
-            expanded.append(node[0])
         for i in problem.getSuccessors(node[0]):
             if i[0] not in expanded:
                 path = node[1].copy()
-                path.append(dirDict.get(i[1]))
+                path.append(i[1])
                 frontier.push((i[0], path))
+                expanded.append(i[0])
 
     return []
     util.raiseNotDefined()
@@ -155,29 +153,31 @@ def uniformCostSearch(problem):
     "*** YOUR CODE HERE ***"
     from game import Directions
     frontier = util.PriorityQueue()
-    expanded = []
-    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    expanded = {}
     startState = problem.getStartState()
+
     if problem.isGoalState(startState):
         return []
     else:
-        expanded.append(startState)
+        expanded[startState] = 0
         for i in problem.getSuccessors(startState):
-            frontier.push((i[0],[i[1]],0),0)
-    count = 0
+            frontier.update((i[0],[i[1]],i[2]),i[2])
+            expanded[i[0]]=i[2]
+
     while frontier:
         node = frontier.pop()
+        print(node)
         goalState = problem.isGoalState(node[0])
+        print
         if goalState:
+            print(node)
             return node[1]
-        if node[0] not in expanded:
-            expanded.append(node[0])
         for i in problem.getSuccessors(node[0]):
-            if i[0] not in expanded:
+            if (i[0] not in expanded) or (i[0] in expanded and (i[2]+node[2])<expanded.get(i[0])):
                 path = node[1].copy()
-                path.append(dirDict.get(i[1]))
-                print(i)
-                frontier.push((i[0], path,i[2]+node[2]),i[2]+node[2])
+                path.append(i[1])
+                frontier.update((i[0], path,i[2]+node[2]),i[2]+node[2])
+                expanded[i[0]] = i[2]+node[2]
 
     return []
     util.raiseNotDefined()
@@ -194,29 +194,29 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     from game import Directions
     frontier = util.PriorityQueue()
-    expanded = []
-    dirDict = {"North":Directions.NORTH, "South":Directions.SOUTH, "East":Directions.EAST, "West":Directions.WEST}
+    expanded = {}
     startState = problem.getStartState()
+
     if problem.isGoalState(startState):
         return []
     else:
-        expanded.append(startState)
+        expanded[startState] = 0
         for i in problem.getSuccessors(startState):
-            frontier.push((i[0],[i[1]],0),0)
-    count = 0
+            frontier.push((i[0],[i[1]],i[2]),i[2]+heuristic(i[0],problem))
+            expanded[i[0]]=i[2]+heuristic(i[0],problem)
+
     while frontier:
         node = frontier.pop()
         goalState = problem.isGoalState(node[0])
         if goalState:
+            print(node)
             return node[1]
-        if node[0] not in expanded:
-            expanded.append(node[0])
         for i in problem.getSuccessors(node[0]):
-            if i[0] not in expanded:
+            if (i[0] not in expanded) or (i[0] in expanded and (i[2]+node[2]+heuristic(i[0],problem))<expanded.get(i[0])):
                 path = node[1].copy()
-                path.append(dirDict.get(i[1]))
-                print(i)
+                path.append(i[1])
                 frontier.push((i[0], path,i[2]+node[2]),i[2]+node[2]+heuristic(i[0],problem))
+                expanded[i[0]] = i[2]+node[2]+heuristic(i[0],problem)
 
     return []
     util.raiseNotDefined()
