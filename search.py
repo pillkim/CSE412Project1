@@ -88,30 +88,31 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from game import Directions
+    #Stack in first in first out, which is what is required for DFS. A nodes children are the first ones searched, and the children are also most recently added to the stack
     frontier = util.Stack()
-    expanded = []
+    expanded = [] #Keeps track of what has already been expanded
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
+    if problem.isGoalState(startState): #If we are starting at the goal state, then there is no path to get there. Youre already there
         return []
     else:
         expanded.append(startState)
         for i in problem.getSuccessors(startState):
-            frontier.push((i[0],[i[1]]))
+            frontier.push((i[0],[i[1]])) #i[0] is the coordinate value ie (1,1). [i[1]] is a list of directions ie 'north' that will become the path. Since it is the successor to the start state there is only one direction
 
     while frontier:
-        node = frontier.pop()
+        node = frontier.pop() #nodes have the format of (coordinate of current location, list of directions to get to current location)
         goalState = problem.isGoalState(node[0])
         if goalState:
             print(node)
-            return node[1]
+            return node[1] #returns path to current location, which is goal state
         if node[0] not in expanded:
-           expanded.append(node[0])
+           expanded.append(node[0]) #if the current locations hasn't been visited before, make it visited
         for i in problem.getSuccessors(node[0]):
             if i[0] not in expanded:
-                path = node[1].copy()
-                path.append(i[1])
-                frontier.push((i[0], path))
-
+                path = node[1].copy() #Makes a copy of the path to the current node
+                path.append(i[1]) #adds the direction to reach the successor node. Iterates through all successor nodes
+                frontier.push((i[0], path)) #adds new node to frontier
+    #Understand this to understand the rest of the algorithms best
     return []
     util.raiseNotDefined()
 
@@ -121,6 +122,7 @@ def breadthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
 
     from game import Directions
+    #Instead of a stack, we use a queue here. A queue is last in first out, meaning that the most senior nodes added to the queue are looked at next
     frontier = util.Queue()
     expanded = []
     startState = problem.getStartState()
@@ -129,7 +131,7 @@ def breadthFirstSearch(problem):
     else:
         expanded.append(startState)
         for i in problem.getSuccessors(startState):
-            frontier.push((i[0],[i[1]]))
+            frontier.push((i[0],[i[1]])) #Same structure to a node as DFS
             expanded.append(i[0])
 
     while frontier:
@@ -152,8 +154,9 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     from game import Directions
+    #We use a priority queue here. The priority queue automatically reorganizes so that the next node looked at is the one with the lowest "cost". In UCS, cost is the distance to a node
     frontier = util.PriorityQueue()
-    expanded = {}
+    expanded = {} #Expanded is a dictionary now because it keeps track of which nodes have been expanded and the cost to get to each
     startState = problem.getStartState()
 
     if problem.isGoalState(startState):
@@ -161,7 +164,10 @@ def uniformCostSearch(problem):
     else:
         expanded[startState] = 0
         for i in problem.getSuccessors(startState):
-            frontier.update((i[0],[i[1]],i[2]),i[2])
+            #The node has a slightly different structure. i[0] and [i[1]] are the same. i[2] is the cost to get to the next node. 
+            #Since this is the first successor, the cost to get to that node is just 0+ the cost of the single move. In the future we will add the cost
+            #of getting to the previous node plus the cost of the single move, which is why we have to both record the current cost in the node and in the PQueue
+            frontier.update((i[0],[i[1]],i[2]),i[2]) 
             expanded[i[0]]=i[2]
 
     while frontier:
@@ -173,10 +179,13 @@ def uniformCostSearch(problem):
             print(node)
             return node[1]
         for i in problem.getSuccessors(node[0]):
+            #If the last time we visited a node, the cost to get there the first time was more than the cost to get there now
+            #then we add that node to the frontier again and update it's cost in Expanded. This is more important when cost is not uniform
+            #You can image that we visited a node with a cost of 10, but discovered a new way that costs 5. Now it's children cost less as well so we must reexplore
             if (i[0] not in expanded) or (i[0] in expanded and (i[2]+node[2])<expanded.get(i[0])):
                 path = node[1].copy()
                 path.append(i[1])
-                frontier.update((i[0], path,i[2]+node[2]),i[2]+node[2])
+                frontier.update((i[0], path,i[2]+node[2]),i[2]+node[2])# you can see how we add the cost to get to the successor node plus the cost to get to the current node
                 expanded[i[0]] = i[2]+node[2]
 
     return []
@@ -215,7 +224,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             if (i[0] not in expanded) or (i[0] in expanded and (i[2]+node[2]+heuristic(i[0],problem))<expanded.get(i[0])):
                 path = node[1].copy()
                 path.append(i[1])
+                #Only difference is adding the heuristic to the PQueue. We do this because the heuristic is important for prioritizing which nodes to explore next
+                #but the heuristic does not actually impact the cost of getting to a node. So we record actual cost in the node and actual cost + heuristic in the PQueue
                 frontier.push((i[0], path,i[2]+node[2]),i[2]+node[2]+heuristic(i[0],problem))
+                #For the same reasons as above we do the same change to expanded
                 expanded[i[0]] = i[2]+node[2]+heuristic(i[0],problem)
 
     return []
