@@ -423,13 +423,25 @@ as eat all food, go to closest food
     walls = problem.walls
 
     "*** YOUR CODE HERE ***"
-    list = []
-    if state[0] in corners:
-        for i in corners:
-            if i != state[0]:
-                list.append(util.manhattanDistance(state[0],i))
-        return min(list)
+    
+    #list = []
+    #for i in range(len(corners)):
+    #    if corners[i] != state[0] and not state[1+i]:
+    #        list.append(util.manhattanDistance(state[0],corners[i]))
+    #if list:
+    #    return min(list)
+    
+    #Its like keeping yourself  away from the worst outcomes than just honing into the best outcome. This is what heuristics is, which is a wholistic view of getting to the goal.
+    list=[]
+    for i in range(len(corners)):
+       if corners[i] != state[0] and not state[1+i]:
+           list.append(util.manhattanDistance(state[0],corners[i]))
+    if list:
+       return max(list)
+    
     return 0  # Default to trivial solution
+    
+
 
 
 class AStarCornersAgent(SearchAgent):
