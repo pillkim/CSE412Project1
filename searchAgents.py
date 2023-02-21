@@ -423,6 +423,12 @@ as eat all food, go to closest food
     walls = problem.walls
 
     "*** YOUR CODE HERE ***"
+    list = []
+    if state[0] in corners:
+        for i in corners:
+            if i != state[0]:
+                list.append(util.manhattanDistance(state[0],i))
+        return min(list)
     return 0  # Default to trivial solution
 
 
